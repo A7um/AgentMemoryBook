@@ -2,15 +2,10 @@
 
 ## Cursor Cloud specific instructions
 
-This is a brand-new, empty repository. As of this setup, the repo contains only a `README.md` with the project title.
+This is a markdown-only book project. There are no services, dependencies, build steps, or tests to run.
 
-- **No services to run**: There are no applications, servers, or background processes to start.
-- **No dependencies**: There are no package managers, lockfiles, or dependency manifests.
-- **No build/test/lint commands**: There is no source code or test infrastructure yet.
-- **No database or external service requirements**.
-
-When source code and dependency files are added, update this section with:
-1. How to install dependencies (e.g. `npm install`, `pip install -r requirements.txt`).
-2. How to run the application in development mode.
-3. How to run linting and tests.
-4. Any non-obvious environment caveats discovered during setup.
+- **Structure**: `README.md` (main page with quick comparison table) + `chapters/` directory with 7 chapter files (01–07).
+- **No code dependencies**: Pure markdown content. No package.json, no requirements.txt.
+- **No services to run**: This is a static documentation project.
+- **Editing**: Edit markdown files directly. The README.md contains the top-level comparison table and links to chapters.
+- **Adding a new provider**: Add the provider section to `chapters/03_providers.md`, update the comparison table in `README.md`, and update the decision guide in `chapters/06_decision_guide.md`.
