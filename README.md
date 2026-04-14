@@ -11,13 +11,30 @@ A comprehensive guide to understanding how state-of-the-art (SOTA) agent memory 
 
 ## How to Read This Book
 
-The book is organized into three parts:
+### Part I — Concepts
 
 1. **[Foundations](chapters/01_foundations.md)** — What agent memory is, why it matters, and the core taxonomy
 2. **[Techniques](chapters/02_techniques.md)** — The engineering building blocks: retrieval, graphs, compression, reflection, and more
-3. **[Provider Deep Dives](chapters/03_providers.md)** — Detailed analysis of every major memory system
-4. **[The Consumer AI Memory Race](chapters/04_consumer_memory.md)** — How OpenAI, Anthropic, and Google approach memory in their products
-5. **[Benchmarks & Evaluation](chapters/05_benchmarks.md)** — How memory systems are measured and compared
+
+### Part II — Provider Deep Dives (with architecture diagrams & real code)
+
+3. **[Provider Index](chapters/03_providers.md)** — Overview and quick navigation
+   - [Mem0](chapters/providers/mem0.md) — Two-phase extract/update pipeline + graph memory
+   - [OpenViking](chapters/providers/openviking.md) — Filesystem paradigm + tiered context loading
+   - [Hindsight](chapters/providers/hindsight.md) — 4-network structured memory (retain/recall/reflect)
+   - [ByteRover](chapters/providers/byterover.md) — Hierarchical Context Tree + 5-tier retrieval
+   - [Zep / Graphiti](chapters/providers/zep.md) — Temporal knowledge graph with bi-temporal edges
+   - [Supermemory](chapters/providers/supermemory.md) — All-in-one memory + RAG + connectors platform
+   - [Honcho](chapters/providers/honcho.md) — Dialectic reasoning + deep user identity modeling
+   - [Letta (MemGPT)](chapters/providers/letta.md) — Memory-as-OS with self-editing agents
+   - [Cognee](chapters/providers/cognee.md) — Knowledge graph + vector hybrid with ECL pipeline
+   - [RetainDB](chapters/providers/retaindb.md) — 7 memory types + delta compression (managed SaaS)
+   - [Nuggets](chapters/providers/nuggets.md) — Holographic Reduced Representations (zero deps)
+
+### Part III — Landscape & Decision Making
+
+4. **[The Consumer AI Memory Race](chapters/04_consumer_memory.md)** — How OpenAI, Anthropic, and Google approach memory
+5. **[Benchmarks & Evaluation](chapters/05_benchmarks.md)** — LongMemEval, LoCoMo leaderboards and analysis
 6. **[Decision Guide](chapters/06_decision_guide.md)** — Choosing the right memory system for your use case
 7. **[The Future](chapters/07_future.md)** — Open challenges and where the field is heading
 
