@@ -1,4 +1,9 @@
 // Click-to-zoom lightbox for Mermaid diagrams and content images (mdBook).
+//
+// Mermaid SVGs rely on internal references like url(#arrowhead-<id>) and
+// xlink:href="#...". To avoid breaking them in the zoomed view we MOVE the
+// rendered <svg> into the lightbox and put it back on close (rather than
+// cloning and stripping ids).
 
 (() => {
     'use strict';
@@ -6,53 +11,92 @@
     const LIGHTBOX_CLASS = 'amba-img-lightbox';
     const INNER_CLASS = 'amba-img-lightbox-inner';
 
+    let activeRestore = null;
+
     function closeLightbox() {
+        if (typeof activeRestore === 'function') {
+            try { activeRestore(); } catch (_) { /* noop */ }
+            activeRestore = null;
+        }
         document.querySelectorAll('.' + LIGHTBOX_CLASS).forEach((el) => el.remove());
         document.body.style.overflow = '';
     }
 
-    function stripElementIds(root) {
-        root.querySelectorAll('[id]').forEach((node) => {
-            node.removeAttribute('id');
-        });
-    }
-
-    function openLightboxFromMermaid(sourceEl) {
+    function createWrap(label) {
         const wrap = document.createElement('div');
         wrap.className = LIGHTBOX_CLASS;
         wrap.setAttribute('role', 'dialog');
         wrap.setAttribute('aria-modal', 'true');
-        wrap.setAttribute('aria-label', 'Diagram (enlarged)');
+        wrap.setAttribute('aria-label', label);
 
         const inner = document.createElement('div');
         inner.className = INNER_CLASS;
         inner.addEventListener('click', (e) => e.stopPropagation());
-
-        const clone = sourceEl.cloneNode(true);
-        stripElementIds(clone);
-        inner.appendChild(clone);
+        wrap.appendChild(inner);
 
         const hint = document.createElement('div');
         hint.className = 'amba-img-lightbox-hint';
         hint.textContent = 'Esc or outside click to close';
         inner.appendChild(hint);
 
-        wrap.appendChild(inner);
         wrap.addEventListener('click', closeLightbox);
+        return { wrap, inner };
+    }
+
+    function openLightboxFromMermaid(mermaidEl) {
+        const svg = mermaidEl.querySelector('svg');
+        if (!svg) {
+            return;
+        }
+
+        const { wrap, inner } = createWrap('Diagram (enlarged)');
+
+        // Placeholder to preserve layout space in the page while moving the SVG.
+        const placeholder = document.createElement('div');
+        placeholder.style.minHeight = mermaidEl.getBoundingClientRect().height + 'px';
+        mermaidEl.parentNode.insertBefore(placeholder, mermaidEl);
+
+        // Remember original sizing so we can restore it precisely.
+        const originalAttrs = {
+            width: svg.getAttribute('width'),
+            height: svg.getAttribute('height'),
+            maxWidth: svg.style.maxWidth,
+            style: svg.getAttribute('style'),
+        };
+
+        // Move (not clone) the mermaid block into the lightbox so all internal
+        // url(#...) references keep working.
+        inner.insertBefore(mermaidEl, inner.firstChild);
+
+        // Let the zoomed SVG fill the lightbox panel.
+        svg.setAttribute('width', '100%');
+        svg.removeAttribute('height');
+        svg.style.maxWidth = 'none';
+        svg.style.width = 'min(92vw, 1600px)';
+        svg.style.height = 'auto';
+
+        activeRestore = () => {
+            // Restore SVG attrs first, then move the mermaid block back.
+            if (originalAttrs.width !== null) { svg.setAttribute('width', originalAttrs.width); }
+            else { svg.removeAttribute('width'); }
+            if (originalAttrs.height !== null) { svg.setAttribute('height', originalAttrs.height); }
+            else { svg.removeAttribute('height'); }
+            if (originalAttrs.style !== null) { svg.setAttribute('style', originalAttrs.style); }
+            else { svg.removeAttribute('style'); }
+            svg.style.maxWidth = originalAttrs.maxWidth || '';
+
+            if (placeholder.parentNode) {
+                placeholder.parentNode.insertBefore(mermaidEl, placeholder);
+                placeholder.remove();
+            }
+        };
+
         document.body.appendChild(wrap);
         document.body.style.overflow = 'hidden';
     }
 
     function openLightboxFromImage(img) {
-        const wrap = document.createElement('div');
-        wrap.className = LIGHTBOX_CLASS;
-        wrap.setAttribute('role', 'dialog');
-        wrap.setAttribute('aria-modal', 'true');
-        wrap.setAttribute('aria-label', 'Image (enlarged)');
-
-        const inner = document.createElement('div');
-        inner.className = INNER_CLASS;
-        inner.addEventListener('click', (e) => e.stopPropagation());
+        const { wrap, inner } = createWrap('Image (enlarged)');
 
         const full = document.createElement('img');
         full.src = img.currentSrc || img.src;
@@ -61,15 +105,8 @@
             full.srcset = img.srcset;
             full.sizes = '96vw';
         }
-        inner.appendChild(full);
+        inner.insertBefore(full, inner.firstChild);
 
-        const hint = document.createElement('div');
-        hint.className = 'amba-img-lightbox-hint';
-        hint.textContent = 'Esc or outside click to close';
-        inner.appendChild(hint);
-
-        wrap.appendChild(inner);
-        wrap.addEventListener('click', closeLightbox);
         document.body.appendChild(wrap);
         document.body.style.overflow = 'hidden';
     }
@@ -97,7 +134,6 @@
             return;
         }
 
-        // Skip UI chrome if images ever appear there
         if (img.closest('#mdbook-menu-bar, #mdbook-sidebar, .sidebar')) {
             return;
         }
@@ -116,8 +152,7 @@
     }
 
     function init() {
-        const content = document.querySelector('.content');
-        bindContent(content);
+        bindContent(document.querySelector('.content'));
     }
 
     document.addEventListener('keydown', (e) => {
@@ -132,11 +167,11 @@
         init();
     }
 
-    const content = document.querySelector('.content');
-    if (content) {
+    const existing = document.querySelector('.content');
+    if (existing) {
         const observer = new MutationObserver(() => {
             bindContent(document.querySelector('.content'));
         });
-        observer.observe(content, { childList: true, subtree: true });
+        observer.observe(existing, { childList: true, subtree: true });
     }
 })();
