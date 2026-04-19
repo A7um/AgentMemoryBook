@@ -11,3 +11,7 @@ preferred-dark-theme = "ayu"
 git-repository-url = "https://github.com/A7um/AgentMemoryBook"
 edit-url-template = "https://github.com/A7um/AgentMemoryBook/edit/main/src/{path}"
 site-url = "/AgentMemoryBook/"
+print = { enable = false }
+
+[output.html.search]
+enable = false
