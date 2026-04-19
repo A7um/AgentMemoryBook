@@ -12,6 +12,10 @@ git-repository-url = "https://github.com/A7um/AgentMemoryBook"
 edit-url-template = "https://github.com/A7um/AgentMemoryBook/edit/main/src/{path}"
 site-url = "/AgentMemoryBook/"
 print = { enable = false }
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
 
 [output.html.search]
 enable = false
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
