@@ -17,7 +17,6 @@ Each provider has its own dedicated deep-dive chapter with architecture diagrams
 | 9 | **Cognee** | ECL pipeline: Extract → Cognify → Load + knowledge graph | [Read →](providers/cognee.md) |
 | 10 | **RetainDB** | 7 memory types + delta compression, managed SaaS | [Read →](providers/retaindb.md) |
 | 11 | **Nuggets** | Holographic Reduced Representations (HRR), zero dependencies | [Read →](providers/nuggets.md) |
-| 12 | **Claude Code** | Markdown files + Sonnet side-calls (from leaked source code) | [Read →](providers/claude_code.md) |
 
 ## What Each Deep Dive Includes
 
@@ -53,8 +52,6 @@ Every provider chapter follows a consistent structure:
 **"I want local-first coding agent memory"** → [ByteRover](providers/byterover.md) (file-based Context Tree)
 
 **"I want zero-dependency fast recall"** → [Nuggets](providers/nuggets.md) (holographic memory, sub-ms)
-
-**"I want to understand how Claude Code's memory works internally"** → [Claude Code](providers/claude_code.md) (from the leaked source)
 
 ---
 

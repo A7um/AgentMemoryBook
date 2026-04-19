@@ -30,7 +30,6 @@ A comprehensive guide to understanding how state-of-the-art (SOTA) agent memory 
    - [Cognee](chapters/providers/cognee.md) — Knowledge graph + vector hybrid with ECL pipeline
    - [RetainDB](chapters/providers/retaindb.md) — 7 memory types + delta compression (managed SaaS)
    - [Nuggets](chapters/providers/nuggets.md) — Holographic Reduced Representations (zero deps)
-   - [Claude Code](chapters/providers/claude_code.md) — Leaked source reveals 200-line index, Sonnet side-calls, KAIROS daemon
 
 ### Part III — Landscape & Decision Making
 
@@ -54,7 +53,6 @@ A comprehensive guide to understanding how state-of-the-art (SOTA) agent memory 
 | **Cognee** | Knowledge graph + vector hybrid | Yes (Apache 2.0) | Institutional knowledge | — | — |
 | **RetainDB** | 7 memory types + delta compression | No (SaaS) | Quick integration, production | SOTA | — |
 | **Nuggets (Holographic)** | HRR superposed vectors | Yes | Lightweight local memory | — | — |
-| **Claude Code** | Markdown files + Sonnet side-call | Source leaked | Individual/team dev with Claude | — | — |
 
 ## Contributing
 
