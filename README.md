@@ -60,6 +60,16 @@ A comprehensive guide to understanding how state-of-the-art (SOTA) agent memory 
 | **Nuggets (Holographic)** | HRR superposed vectors | Yes | Lightweight local memory | — | — |
 | **Claude Code** | Markdown files + Sonnet side-call | Source leaked | Individual/team dev with Claude | — | — |
 
+## For Agents
+
+This book is designed to be kept up-to-date by AI agents. See the **[Update Guide](UPDATE_GUIDE.md)** for instructions on how to:
+
+- Discover which agent platforms are currently top-tier (don't assume — research it)
+- Scan each platform for memory provider integrations
+- Check what developers are actively discussing
+- Decide what qualifies for inclusion
+- Update the book without falling into inertia or coverage gap traps
+
 ## Contributing
 
 Found an error or want to add a provider? Open an issue or submit a pull request.
