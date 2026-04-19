@@ -1,7 +1,6 @@
 [book]
 authors = ["Atum"]
 language = "en"
-multilingual = false
 src = "src"
 title = "AgentMemoryBook"
 description = "A comprehensive guide to understanding how SOTA agent memory systems work"
