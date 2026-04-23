@@ -2,13 +2,13 @@
 
 **官网:** [retaindb.com](https://retaindb.com) | **许可证:** 专有（SaaS） | **基准测试:** LongMemEval SOTA（自报）
 
-> 托管式记忆 SaaS，提供七种类型化记忆分类、增量压缩以实现大幅 token 节省，以及亚 40ms 检索——专为以最少工程投入实现生产集成而设计。
+> 托管式记忆 SaaS：七种类型化记忆分类、增量压缩带来 50–90% 的 token 节省、亚 40ms 检索——几行代码接入，开箱即用。
 
 ---
 
 ## 架构概览
 
-RetainDB 是一个完全托管的服务，围绕两项关键创新构建：**类型化记忆分类**（7 种不同的记忆类型）和**增量压缩**（50–90% token 节省）。该架构专为生产环境设计：按用户隔离、SOC 2 就绪以及多 SDK 支持。
+RetainDB 是一个全托管的记忆服务，核心卖点有两个：**类型化记忆分类**（7 种语义类型）和**增量压缩**（50–90% token 节省）。架构上为生产环境量身打造：按用户隔离、SOC 2 就绪、多语言 SDK 全覆盖。
 
 ```mermaid
 graph TB
@@ -76,7 +76,7 @@ graph TB
 
 ## 7 种记忆类型
 
-RetainDB 将每条存储的信息归类为七种语义类型之一。这种分类能够实现基于类型的检索策略和更精确的上下文构建。
+RetainDB 会自动将每条存入的信息归入七种语义类型之一。有了类型标签，检索策略就能按需调整，上下文构建也更加精准。
 
 ```mermaid
 graph TB
@@ -102,26 +102,26 @@ graph TB
 | 记忆类型 | 描述 | 检索优先级 | 示例 |
 |-------------|-------------|-------------------|---------|
 | **Factual** | 关于实体的客观事实 | 身份类问题优先级高 | "Sarah is a senior engineer at Acme Corp" |
-| **Preference** | 喜好、厌恶、默认选择 | 个性化场景优先级高 | "Prefers dark mode, Vim keybindings, terse answers" |
+| **Preference** | 喜好、厌恶、默认偏好 | 个性化场景优先级高 | "Prefers dark mode, Vim keybindings, terse answers" |
 | **Event** | 带时间戳的事件 | 时间相关查询优先级高 | "Started Rust project in March 2026" |
-| **Relationship** | 人或事物之间的联系 | 社交上下文优先级高 | "Works with Bob on the analytics pipeline" |
-| **Opinion** | 主观观点和看法 | 中等（取决于上下文） | "Thinks microservices add unnecessary complexity" |
-| **Goal** | 目标、志向、计划 | 主动建议优先级高 | "Wants to get Kubernetes certified by June" |
+| **Relationship** | 人或事物间的关联 | 社交上下文优先级高 | "Works with Bob on the analytics pipeline" |
+| **Opinion** | 主观看法与判断 | 中等（视上下文而定） | "Thinks microservices add unnecessary complexity" |
+| **Goal** | 目标、计划、志向 | 主动建议时优先级高 | "Wants to get Kubernetes certified by June" |
 | **Instruction** | 给 AI 的行为指令 | 最高（始终相关） | "Always provide code examples, never use emojis" |
 
-### 为什么类型化记忆很重要
+### 为什么类型化记忆如此关键
 
-没有类型时，检索系统会将 "Sarah lives in Seattle" 和 "Sarah wants to move to Austin" 同等对待。有了类型后：
+没有类型标签时，检索系统会把 "Sarah lives in Seattle" 和 "Sarah wants to move to Austin" 当成同等重要的信息一股脑塞进上下文。而有了类型区分：
 
-- **Factual**（"lives in Seattle"）在当前状态问题中被返回
-- **Goal**（"wants to move to Austin"）在志向类问题中被返回
-- 当两者冲突时，类型信号能区分哪个是当前事实，哪个是未来意图
+- **Factual**（"lives in Seattle"）在回答当前状态问题时被优先返回
+- **Goal**（"wants to move to Austin"）在讨论未来规划时才会浮出水面
+- 当两条信息看似矛盾，类型信号帮助模型分辨：哪个是当前事实，哪个是未来意图
 
 ---
 
 ## 增量压缩
 
-增量压缩是 RetainDB 保持记忆存储精简的方法。RetainDB 不会存储事实的每个版本，而是仅计算和存储记忆状态之间的**变更（增量）**。
+增量压缩是 RetainDB 保持记忆精简的秘诀。它不会傻傻存下事实的每个历史版本，而是只保留记忆状态之间的**变更量（delta）**——用最少的 token 表达最新的真相。
 
 ```mermaid
 sequenceDiagram
@@ -149,22 +149,22 @@ sequenceDiagram
     Note over RDB: Without delta compression: 3 separate memories (60+ tokens)<br/>With delta compression: 1 current fact + 1 event (25 tokens)
 ```
 
-### Token 节省
+### Token 节省一览
 
-| 场景 | 无压缩 | 使用增量压缩 | 节省 |
+| 场景 | 无压缩 | 增量压缩后 | 节省比例 |
 |----------|-------------------|------------|---------|
 | 用户偏好（20 次更新） | ~400 tokens | ~80 tokens | **80%** |
 | 项目上下文（50 次更新） | ~1,200 tokens | ~180 tokens | **85%** |
 | 关系图谱（30 次更新） | ~600 tokens | ~60 tokens | **90%** |
 | 混合记忆（100 轮次） | ~2,500 tokens | ~500 tokens | **80%** |
 
-根据信息更新频率的不同，增量压缩可实现 **50–90% 的 token 节省**。这直接转化为更低的 LLM 成本和上下文窗口中更多的可用空间。
+根据信息更新频率的不同，增量压缩可实现 **50–90% 的 token 节省**。这笔账很实在——既意味着更低的 LLM 成本，也意味着上下文窗口里能塞下更多有用的信息。
 
 ---
 
 ## `runTurn` 流程
 
-RetainDB 的主要集成点是 `runTurn` 方法，它封装了整个对话轮次——在一次调用中处理记忆检索、上下文注入和记忆更新。
+RetainDB 最核心的集成点就是 `runTurn` 方法——一次调用搞定记忆检索、上下文注入和记忆更新，把整个对话轮次包圆了。
 
 ```mermaid
 sequenceDiagram
@@ -225,6 +225,8 @@ console.log(response);       // LLM response personalized with user memories
 console.log(memoriesUpdated); // [ { type: "Goal", content: "Learning Rust" } ]
 ```
 
+就这么几行代码，你的 LLM 调用就拥有了跨会话记忆能力。RetainDB 在幕后完成了记忆检索、上下文注入、新记忆抽取和增量压缩的全部工作。
+
 ### 直接记忆操作
 
 ```typescript
@@ -277,7 +279,7 @@ print(result["memories_updated"])
 
 ### Memory Router 集成
 
-Memory Router 自动将记忆路由到适当的类型并处理去重：
+Memory Router 能自动分析对话内容、将记忆路由到合适的类型，并处理去重——省去手动归类的麻烦：
 
 ```typescript
 import { RetainDB, MemoryRouter } from "@retaindb/sdk";
@@ -327,7 +329,7 @@ const mcpConfig = {
 
 ### 场景
 
-你正在构建一个客服聊天机器人，能够跨会话记住每位客户的历史记录、偏好和当前问题。
+你要做一个客服聊天机器人，不仅要当场解决问题，还要跨会话记住每位客户的历史、偏好和待办事项。
 
 ### 步骤 1：初始化 RetainDB
 
@@ -366,7 +368,7 @@ const { response } = await db.user(customerId).runTurn({
 // - Goal: "Wants billing issue resolved"
 ```
 
-### 步骤 3：后续会话（几天后）
+### 步骤 3：后续跟进（几天后）
 
 ```typescript
 // Alice comes back — RetainDB remembers everything
@@ -389,6 +391,8 @@ const { response } = await db.user(customerId).runTurn({
 
 // Agent can immediately reference the billing issue without Alice repeating it
 ```
+
+Alice 不用重复说明自己是谁、遇到了什么问题。智能体已经记得一切，直接切入正题。
 
 ### 步骤 4：记忆随时间演进
 
@@ -415,6 +419,8 @@ const { response } = await db.user(customerId).runTurn({
 // - Factual: "Has Pro plan" → delta-compressed when upgrade completes
 ```
 
+注意这里增量压缩的精妙之处——退款事件不会被新增为一条独立记忆，而是合并到已有的事件记录中；而"想升级 Enterprise"则被识别为一个全新的 Goal 类型记忆。
+
 ---
 
 ## 性能与合规
@@ -423,7 +429,7 @@ const { response } = await db.user(customerId).runTurn({
 |--------|-------|
 | **检索延迟** | < 40ms (p95) |
 | **LongMemEval 分数** | SOTA（自报） |
-| **Token 节省** | 50–90%（通过增量压缩） |
+| **Token 节省** | 50–90%（增量压缩） |
 | **用户隔离** | 按用户数据分区 |
 | **合规性** | SOC 2 就绪 |
 | **SDK** | JavaScript/TypeScript, Python, Go |
@@ -433,29 +439,29 @@ const { response } = await db.user(customerId).runTurn({
 
 ## 优势
 
-- **零成本集成**：`runTurn` 封装你现有的 LLM 调用——只需最少的代码改动
-- **7 种类型化记忆分类**：语义分类实现了比无类型存储更精确的检索
-- **增量压缩**：50–90% 的 token 节省在生产工作负载中效果显著
-- **亚 40ms 检索**：生产级延迟，不会拖慢你的应用
-- **多 SDK 支持**：原生支持 JS/TS、Python 和 Go SDK，加上 MCP 框架集成
-- **SOC 2 就绪**：企业级数据隔离和合规态势
+- **接入成本极低**：`runTurn` 包裹你现有的 LLM 调用——改动量可以忽略不计
+- **7 种类型化记忆**：语义分类让检索精度远超无类型的粗放存储
+- **增量压缩**：50–90% 的 token 节省，在生产级工作负载下效果立竿见影
+- **亚 40ms 检索**：生产级延迟，不会拖慢你的应用响应
+- **多语言 SDK 全覆盖**：原生 JS/TS、Python、Go SDK，外加 MCP 协议支持
+- **SOC 2 就绪**：企业级数据隔离与合规保障
 
 ## 局限性
 
-- **专有/闭源**：无自托管选项——完全依赖供应商
-- **基准测试透明度**：SOTA LongMemEval 声明为自报，未公开方法论或可复现的基准测试
-- **定价不透明**：基于用量的定价对高流量应用可能难以预测
-- **定制性有限**：记忆类型分类固定为 7 种——无法添加自定义类型
-- **无图谱能力**：与 Cognee 或 Supermemory 不同，RetainDB 不构建知识图谱
-- **新入局者**：与成熟产品相比，生产环境的使用记录有限
+- **闭源无自托管**：你的数据完全托管在第三方——供应商依赖不可避免
+- **基准测试透明度不足**：SOTA 声明为自报，既没公开方法论，也无法复现验证
+- **定价不够透明**：按量计费的模式下，高流量应用的成本可能难以预估
+- **类型体系固定**：7 种记忆类型无法扩展——想加自定义类型？不支持
+- **没有图谱能力**：不像 Cognee 或 Supermemory 那样能构建知识图谱
+- **入场较晚**：相比成熟竞品，生产环境的验证案例还不够多
 
 ## 最佳适用场景
 
-- **需要快速集成的生产应用**——`runTurn` 以最少的工作量获得 80% 的价值
-- **面向客户的产品**：按用户记忆隔离是硬性需求的场景
-- **注重成本的团队**：增量压缩的 token 节省足以证明 SaaS 成本的合理性
-- **多语言团队**：使用 JS、Python 和 Go 的服务
-- **企业环境**：需要 SOC 2 合规就绪
+- **急需快速集成的生产应用**——`runTurn` 用最小的工程投入换来 80% 的效果
+- **面向客户的产品**——按用户隔离的记忆是刚需
+- **注重成本的团队**——增量压缩省下的 token 开支足以覆盖 SaaS 费用
+- **多语言技术栈的团队**——JS、Python、Go 的服务都能原生接入
+- **企业客户**——需要 SOC 2 合规就绪
 
 ---
 
