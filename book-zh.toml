@@ -1,16 +1,16 @@
 [book]
 authors = ["Atum"]
-language = "en"
-src = "src"
-title = "AgentMemoryBook"
-description = "A comprehensive guide to understanding how SOTA agent memory systems work"
+language = "zh"
+src = "src-zh"
+title = "AgentMemoryBook — 智能体记忆全书"
+description = "一本全面理解前沿智能体记忆系统的指南——它们使用了哪些技术、有何不同、各自适用于什么场景"
 
 [output.html]
 default-theme = "light"
 preferred-dark-theme = "ayu"
 git-repository-url = "https://github.com/A7um/AgentMemoryBook"
-edit-url-template = "https://github.com/A7um/AgentMemoryBook/edit/main/src/{path}"
-site-url = "/AgentMemoryBook/"
+edit-url-template = "https://github.com/A7um/AgentMemoryBook/edit/main/src-zh/{path}"
+site-url = "/AgentMemoryBook/zh/"
 print = { enable = false }
 additional-css = ["book-zoom.css", "lang-switcher.css"]
 additional-js = ["mermaid.min.js", "mermaid-init.js", "book-zoom.js", "lang-switcher.js"]
