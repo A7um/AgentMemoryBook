@@ -3,6 +3,8 @@
 **By [Atum](https://atum.li)**
 
 > **[Read the book online →](https://a7um.github.io/AgentMemoryBook/)**
+>
+> [阅读中文版 / Read in Chinese →](README.zh.md)
 
 A comprehensive guide to understanding how state-of-the-art (SOTA) agent memory systems work — what techniques they use, how they differ, and which situations each one fits best.
 

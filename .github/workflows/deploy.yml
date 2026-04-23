@@ -35,8 +35,11 @@ jobs:
           sudo install -m 755 mdbook-mermaid /usr/local/bin/mdbook-mermaid
           rm -f mdbook-mermaid
 
-      - name: Build the book
+      - name: Build English book
         run: mdbook build
+
+      - name: Build Chinese book
+        run: mdbook build -d book/zh book-zh.toml
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
