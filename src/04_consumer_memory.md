@@ -127,6 +127,16 @@ As of March 2026, Claude's chat interface remembers context from conversations:
 
 Both Claude and Gemini now offer "import memory" tools — you can export your memories from ChatGPT and paste them into Claude to switch providers without losing context.
 
+### May 2026: Dreaming (Memory Consolidation)
+
+Anthropic shipped "Dreaming" on May 6, 2026 — an async background process that consolidates agent memory between sessions. Inspired by how the brain reorganizes memories during sleep, a dream job reads an existing memory store plus up to 100 past session transcripts, then produces a new, separate memory store with duplicates merged, stale entries replaced, and cross-session patterns surfaced as compact notes. The original store is never modified — developers inspect the output and opt in.
+
+Dreaming is currently in research preview for Managed Agents (requires `dreaming-2026-04-21` beta header). It supports Claude Opus 4.7 and Sonnet 4.6. An `instructions` parameter (up to 4,096 characters) lets developers focus the consolidation: "focus on coding-style preferences, ignore one-off debugging notes."
+
+Early results are striking: legal-AI company Harvey reported a ~6x increase in agent task-completion rates after enabling Dreaming, because the agent stopped forgetting file-type quirks and tool-specific workarounds between sessions.
+
+This is the first production implementation of the "sleep-time consolidation" pattern — directly addressing one of the field's hardest open challenges (see Chapter 7).
+
 ### Design Philosophy
 
 Anthropic's approach reflects a developer-first mindset:
@@ -186,6 +196,18 @@ Google's unique advantage is the existing ecosystem. While ChatGPT and Claude mu
 - Richer context (your entire digital history)
 - But also: higher privacy sensitivity and more complex consent model
 
+### May 2026: Memory Bank (I/O 2026)
+
+Google launched Memory Bank at I/O 2026 (May 19) as part of the Gemini Enterprise Agent Platform alongside ADK 2.0 (Agent Development Kit, GA the same day). Memory Bank provides identity-scoped persistence — an agent can remember a user's preferences, history, and key details across multiple sessions.
+
+Architecturally, Memory Bank is distinct from Google's existing Personal Intelligence feature. Personal Intelligence pulls from Gmail/Photos/YouTube; Memory Bank stores facts extracted from agent conversations, scoped to a user identity. The two systems complement each other: Personal Intelligence provides broad life context, Memory Bank provides agent-specific learned context.
+
+Key features:
+- `GenerateMemories` — automatically extracts facts from conversation history at session end
+- `RetrieveMemories` — retrieves all memories or similarity-searched relevant memories at session start
+- Built-in ADK tools: `PreloadMemoryTool` (auto-loads at every turn) and `LoadMemoryTool` (on-demand)
+- Multi-regional support — one Memory Bank can serve agents deployed across regions
+
 ---
 
 ## Comparison: Three Philosophies
@@ -200,6 +222,7 @@ Google's unique advantage is the existing ecosystem. While ChatGPT and Claude mu
 | **Cold start** | Must learn from chats | Load CLAUDE.md files | Connect existing Google apps |
 | **Portability** | Export via settings | Git-trackable files | Import/export tools |
 | **Privacy model** | Opt-in, deletable | Client-controlled | Granular app permissions |
+| **Async consolidation** | No | Yes (Dreaming) | No |
 
 ### What This Tells Us
 
