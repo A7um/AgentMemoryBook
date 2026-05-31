@@ -22,6 +22,8 @@ A user who interacts with an AI assistant daily for a year will generate tens of
 
 Cognee's `memify` operation is an early example, pruning stale nodes and reweighting edges based on usage. But no system yet handles truly long-term (multi-year) memory consolidation at scale.
 
+**May 2026 Update:** Anthropic's Dreaming feature (shipped May 6, 2026) is the first production-grade implementation of continual consolidation. It runs an async background job that reads up to 100 past sessions, merges duplicates, resolves contradictions, and surfaces cross-session patterns — then outputs a new, separate memory store for developer review. Harvey, a legal-AI company, reported a ~6x improvement in task-completion rates after enabling it. While Dreaming is currently limited to Managed Agents and requires opt-in, it represents a proof point that automated consolidation works in practice.
+
 ---
 
 ## Open Challenge 2: Learned Forgetting

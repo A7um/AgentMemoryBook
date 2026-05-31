@@ -17,6 +17,8 @@ Each provider has its own dedicated deep-dive chapter with architecture diagrams
 | 9 | **Cognee** | ECL pipeline: Extract → Cognify → Load + knowledge graph | [Read →](providers/cognee.md) |
 | 10 | **RetainDB** | 7 memory types + delta compression, managed SaaS | [Read →](providers/retaindb.md) |
 | 11 | **Nuggets** | Holographic Reduced Representations (HRR), zero dependencies | [Read →](providers/nuggets.md) |
+| 12 | **agentmemory** | Cross-agent MCP memory server (BM25 + vector + knowledge graph) | — |
+| 13 | **TencentDB Agent Memory** | 4-tier local pipeline (Conversation → Atom → Scenario → Persona) | — |
 
 ## What Each Deep Dive Includes
 

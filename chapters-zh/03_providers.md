@@ -17,6 +17,8 @@
 | 9 | **Cognee** | ECL 流水线：Extract → Cognify → Load + 知识图谱 | [阅读 →](providers/cognee.md) |
 | 10 | **RetainDB** | 7 种记忆类型 + 增量压缩，托管 SaaS | [阅读 →](providers/retaindb.md) |
 | 11 | **Nuggets** | 全息缩减表示（HRR），零依赖 | [阅读 →](providers/nuggets.md) |
+| 12 | **agentmemory** | 跨智能体 MCP 记忆服务器（BM25 + 向量 + 知识图谱） | — |
+| 13 | **TencentDB Agent Memory** | 四级本地流水线（对话 → 原子 → 场景 → 人格） | — |
 
 ## 每篇深度解析涵盖哪些内容
 
