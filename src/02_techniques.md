@@ -428,6 +428,66 @@ Letta's V1 architecture refines this with:
 
 ---
 
+## Technique 11: File-Based Memory (.MD Paradigm)
+
+**What it is:** Storing project context, agent instructions, and accumulated knowledge as plain markdown files that agents read at session start and update during or after sessions.
+
+The .MD paradigm emerged as the dominant memory pattern for coding agents in 2026. The core idea is deceptively simple: instead of vector databases or graph stores, write everything down in `.md` files that live alongside the code. Agents read these files when they start a session and write back to them when they learn something new.
+
+### Key Components of the Ecosystem
+
+| File | Purpose | Scope |
+|------|---------|-------|
+| **AGENTS.md** | Open standard (Linux Foundation, 60K+ repos). A vendor-neutral "README for agents" providing project context, conventions, and instructions. Supported by Claude Code, Cursor, Codex, Copilot, Gemini CLI, and others. | Cross-tool |
+| **CLAUDE.md** | Anthropic's Claude-specific instruction file, loaded automatically at session start. Supports hierarchical scoping (global, project, subdirectory). | Claude Code |
+| **MEMORY.md** | Auto-generated persistent memory. Claude Code writes insights during sessions; first 200 lines loaded at session start, with topic files loaded on demand. | Claude Code |
+| **SKILL.md** | Reusable workflows loaded on demand when triggered by context. obra/superpowers (213K stars) built an entire development methodology on this primitive. | Claude Code / superpowers |
+| **Rules files** | `.cursor/rules/*.mdc` (Cursor), `.github/copilot-instructions.md` (Copilot), `.windsurf/rules/` (Windsurf). | Tool-specific |
+
+### Progressive Disclosure
+
+The pattern follows progressive disclosure: always-loaded files stay small (<200 lines), detailed guidance lives in referenced files loaded on demand. As Anthropic's docs put it: "CLAUDE.md is RAM, agents and skills are disk."
+
+```
+Session start
+    │
+    ▼
+Load CLAUDE.md / AGENTS.md / rules     ← always loaded ("RAM")
+    │
+    ▼
+Load first 200 lines of MEMORY.md      ← boot-time context
+    │
+    ▼
+Agent encounters relevant context
+    │
+    ▼
+Load matching SKILL.md on demand        ← lazy loaded ("disk")
+    │
+    ▼
+Session end: agent writes learnings back to MEMORY.md
+```
+
+### Key Innovations
+
+- **agentmemory** (rohitg00) replaces static .MD files with a searchable MCP server — 38 tools, BM25+vector+knowledge graph retrieval, 92% token reduction vs raw files. Works across Claude Code, Cursor, Codex, Windsurf, and 30+ agents simultaneously via MCP.
+- **obra/superpowers** provides composable SKILL.md files that auto-trigger based on context, enforcing TDD, code review, and structured planning.
+
+**Strengths:**
+- Human-readable, version-controlled, zero infrastructure
+- Cross-tool portable — AGENTS.md works everywhere
+- Git-friendly — memory changes show up in diffs and PRs
+- Natural progressive disclosure from always-loaded to on-demand
+
+**Weaknesses:**
+- 200-line ceiling causes instruction dropout on large projects
+- No semantic search in basic form — retrieval is file-level, not fact-level
+- Manual curation overhead — someone has to maintain the files
+- Stale files degrade performance silently
+
+**Who uses it:** Claude Code (CLAUDE.md + MEMORY.md), Cursor (.cursor/rules/), GitHub Copilot (copilot-instructions.md), Codex (AGENTS.md), Windsurf (.windsurf/rules/), Gemini CLI
+
+---
+
 ## Technique Summary Matrix
 
 | Technique | Latency | Accuracy | Complexity | Infrastructure |
@@ -442,8 +502,9 @@ Letta's V1 architecture refines this with:
 | HRR | ⚡ Sub-ms | ⚠️ Structured only | Low | None |
 | Multi-Strategy Retrieval | 🔄 Medium | ✅ Excellent | High | Multiple |
 | Self-Editing | 🔄 Medium | ⚠️ Agent-dependent | Medium | LLM + Store |
+| File-Based (.MD) | ⚡ Very Low | ⚠️ Depends on curation | Low | None |
 
-The best systems combine multiple techniques. Hindsight uses structured networks + multi-strategy retrieval + reflection. Mem0 uses vector stores + LLM curation + knowledge graphs. ByteRover uses hierarchical trees + LLM curation + multi-tier retrieval.
+The best systems combine multiple techniques. Hindsight uses structured networks + multi-strategy retrieval + reflection. Mem0 uses vector stores + LLM curation + knowledge graphs. ByteRover uses hierarchical trees + LLM curation + multi-tier retrieval. Meanwhile, the .MD paradigm has become the universal "boot layer" for coding agents — nearly every tool loads some form of markdown instruction file at session start, often layered on top of more sophisticated retrieval techniques.
 
 ---
 

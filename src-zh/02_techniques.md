@@ -428,6 +428,66 @@ Letta V1 架构在此基础上做了进一步改进：
 
 ---
 
+## 技术 11：基于文件的记忆（.MD 范式）
+
+**是什么：** 把项目上下文、智能体指令和积累的知识以纯 Markdown 文件的形式存储，智能体在会话开始时读取，会话中或结束后进行更新。
+
+.MD 范式在 2026 年崛起为编程智能体的主流记忆模式。核心思想出奇地简单：不用向量数据库，也不用图存储，而是把一切写进与代码并排存放的 `.md` 文件里。智能体启动会话时读取这些文件，学到新东西时再写回去。
+
+### 生态核心组件
+
+| 文件 | 用途 | 适用范围 |
+|------|------|----------|
+| **AGENTS.md** | 开放标准（Linux Foundation，60K+ 仓库）。厂商无关的"智能体版 README"，提供项目上下文、约定和指令。Claude Code、Cursor、Codex、Copilot、Gemini CLI 等均支持。 | 跨工具 |
+| **CLAUDE.md** | Anthropic 的 Claude 专属指令文件，会话开始时自动加载。支持分层作用域（全局、项目、子目录）。 | Claude Code |
+| **MEMORY.md** | 自动生成的持久记忆。Claude Code 在会话中将洞察写入其中；启动时加载前 200 行，主题文件按需加载。 | Claude Code |
+| **SKILL.md** | 可复用的工作流，由上下文触发后按需加载。obra/superpowers（213K stars）在这个原语之上构建了一整套开发方法论。 | Claude Code / superpowers |
+| **Rules 文件** | `.cursor/rules/*.mdc`（Cursor）、`.github/copilot-instructions.md`（Copilot）、`.windsurf/rules/`（Windsurf）。 | 工具专属 |
+
+### 渐进式披露
+
+该模式遵循渐进式披露原则：始终加载的文件保持精简（<200 行），详细指导放在按需加载的引用文件中。用 Anthropic 文档的话说："CLAUDE.md 是内存，agents 和 skills 是磁盘。"
+
+```
+Session start
+    │
+    ▼
+Load CLAUDE.md / AGENTS.md / rules     ← 始终加载（"内存"）
+    │
+    ▼
+Load first 200 lines of MEMORY.md      ← 启动时上下文
+    │
+    ▼
+Agent encounters relevant context
+    │
+    ▼
+Load matching SKILL.md on demand        ← 按需加载（"磁盘"）
+    │
+    ▼
+Session end: agent writes learnings back to MEMORY.md
+```
+
+### 关键创新
+
+- **agentmemory**（rohitg00）用一个可搜索的 MCP 服务器取代了静态 .MD 文件——38 个工具、BM25 + 向量 + 知识图谱检索，相比原始文件减少 92% 的 token 消耗。通过 MCP 同时服务 Claude Code、Cursor、Codex、Windsurf 等 30+ 种智能体。
+- **obra/superpowers** 提供可组合的 SKILL.md 文件，根据上下文自动触发，强制执行 TDD、代码评审和结构化规划。
+
+**优势：**
+- 人类可读、版本可控、零基础设施
+- 跨工具可移植——AGENTS.md 到处都能用
+- 对 Git 友好——记忆变更体现在 diff 和 PR 中
+- 天然的渐进式披露，从始终加载到按需加载
+
+**劣势：**
+- 200 行上限导致大型项目的指令丢失
+- 基础形态没有语义搜索——检索粒度是文件级而非事实级
+- 人工维护开销——总得有人来打理这些文件
+- 过时的文件会悄无声息地拖累性能
+
+**使用者：** Claude Code（CLAUDE.md + MEMORY.md）、Cursor（.cursor/rules/）、GitHub Copilot（copilot-instructions.md）、Codex（AGENTS.md）、Windsurf（.windsurf/rules/）、Gemini CLI
+
+---
+
 ## 技术总结矩阵
 
 | 技术 | 延迟 | 准确度 | 复杂度 | 基础设施 |
@@ -442,8 +502,9 @@ Letta V1 架构在此基础上做了进一步改进：
 | HRR | ⚡ 亚毫秒 | ⚠️ 仅结构化 | 低 | 无 |
 | 多策略检索 | 🔄 中 | ✅ 优秀 | 高 | 多种 |
 | 自编辑 | 🔄 中 | ⚠️ 取决于智能体 | 中 | LLM + 存储 |
+| 基于文件（.MD） | ⚡ 极低 | ⚠️ 取决于维护 | 低 | 无 |
 
-最厉害的系统都是多种技术组合出击。Hindsight 用的是结构化网络 + 多策略检索 + 反思。Mem0 的组合是向量存储 + LLM 管理 + 知识图谱。ByteRover 走的是层级树 + LLM 管理 + 多层检索的路线。
+最厉害的系统都是多种技术组合出击。Hindsight 用的是结构化网络 + 多策略检索 + 反思。Mem0 的组合是向量存储 + LLM 管理 + 知识图谱。ByteRover 走的是层级树 + LLM 管理 + 多层检索的路线。与此同时，.MD 范式已成为编程智能体的通用"启动层"——几乎每个工具在会话开始时都会加载某种形式的 Markdown 指令文件，通常还会在此基础上叠加更复杂的检索技术。
 
 ---
 

@@ -4,11 +4,11 @@
 
 | Stat | Value |
 |---|---|
-| **GitHub Stars** | 38 000+ |
+| **GitHub Stars** | 57 000+ |
 | **License** | Apache 2.0 |
 | **Paper** | [arXiv:2504.19413](https://arxiv.org/abs/2504.19413) (Apr 2025) |
 | **Default LLM** | GPT-4o-mini |
-| **Storage** | Vector DB + optional Neo4j (graph) |
+| **Storage** | Vector DB + built-in entity linking (v3); Neo4j graph removed in v3 |
 | **p95 Latency Reduction** | 91% vs full-context |
 | **Token Cost Savings** | ≈ 90% |
 | **LOCOMO Score** | 66.9% (Mem0) · 68.4% (Mem0g) |
@@ -406,9 +406,23 @@ The LLM recognizes that:
 
 ---
 
+## May 2026: v3 Architecture Overhaul
+
+Mem0 shipped a ground-up v3 redesign in May 2026. The most significant change: **graph memory (Mem0g) has been removed from the open-source SDK**. The separate Neo4j/Memgraph/Kuzu/Apache AGE graph drivers are gone, replaced by built-in entity linking that extracts entities automatically during `add()` and stores them in a parallel vector collection. At query time, entities from the query boost ranking on matching memories — achieving similar results to the graph variant without external infrastructure.
+
+Other v3 changes:
+- **Single-pass ADD-only extraction** replaces the multi-pass ADD/UPDATE/DELETE cycle, significantly reducing latency
+- **Multi-signal hybrid retrieval** fuses semantic similarity, BM25 keyword matching, and entity-graph boosting into a single score
+- **SDK cleanup**: all parameters and response fields are now camelCase; `organizationId`/`projectId` removed from client initialization
+- **LongMemEval score jumped to 94.8%** (up from 66.9% in v1), making Mem0 competitive with the top systems
+
+This is a philosophical shift: Mem0 moved from 'bring your own graph DB' to 'entity linking works well enough without one.' For teams that previously paid $249/mo for the Pro graph tier, the v3 open-source version now provides comparable entity-aware retrieval at no cost.
+
+---
+
 ## Strengths
 
-- **Battle-tested at scale** — 38K+ GitHub stars and a large production user base provide confidence in reliability.
+- **Battle-tested at scale** — 57K+ GitHub stars and a large production user base provide confidence in reliability.
 - **Simple mental model** — The two-phase extract → update pipeline is easy to reason about, debug, and extend.
 - **Massive efficiency gains** — 91% lower p95 latency and ≈90% token savings vs stuffing full context.
 - **Flexible deployment** — Open-source local mode (Apache 2.0) or fully managed cloud; bring your own LLM and vector DB.
@@ -419,8 +433,8 @@ The LLM recognizes that:
 
 - **LLM-dependent conflict resolution** — All merge/update decisions are delegated to the LLM with no deterministic fallback; edge cases may produce inconsistent results.
 - **No built-in temporal reasoning** — Memories have timestamps but the system doesn't natively reason about time ("What was Alex's job *last year*?").
-- **Graph features are paywalled** — Neo4j-backed Mem0g requires the Pro plan ($249/mo) on the managed platform.
-- **LOCOMO ceiling** — At 66.9%, the base variant lags behind newer research systems, though the graph variant closes some of the gap.
+- **Graph memory removed in v3** — The standalone Neo4j/Memgraph/Kuzu/Apache AGE graph drivers have been removed; entity linking is now built-in but less flexible than a full graph DB for complex relational queries.
+- **LOCOMO ceiling (pre-v3)** — The v1 base variant scored 66.9%, though the v3 architecture has pushed LongMemEval to 94.8%.
 - **Single-user memory scoping** — Memories are keyed by `user_id`; multi-agent or cross-user shared memory requires manual orchestration.
 
 ## Best For
@@ -431,7 +445,7 @@ The LLM recognizes that:
 | **Customer support agents** that must remember past issues | Automatic dedup prevents "memory pollution" |
 | **Rapid prototyping** of memory-augmented agents | Open-source, pip-installable, 5-line integration |
 | **Cost-sensitive deployments** with long conversations | 90% token savings directly reduce API bills |
-| **Teams that want a graph layer** for entity-rich domains | Mem0g with Neo4j (Pro tier) |
+| **Teams that want entity-aware retrieval** for entity-rich domains | v3 built-in entity linking (no external graph DB needed) |
 
 ---
 
@@ -439,9 +453,9 @@ The LLM recognizes that:
 
 | Tier | Price | Includes |
 |---|---|---|
-| **Open-Source** | Free | Core two-phase pipeline, local vector DB |
+| **Open-Source** | Free | v3 pipeline with entity linking, local vector DB |
 | **Cloud Free** | $0 | Managed hosting, limited usage |
-| **Pro** | $249/mo | Graph memory (Mem0g), priority support, higher limits |
+| **Pro** | $249/mo | Priority support, higher limits (graph tier discontinued in v3) |
 
 ---
 

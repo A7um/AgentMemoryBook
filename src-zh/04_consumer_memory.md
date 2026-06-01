@@ -127,6 +127,16 @@ Claude Code 的自动记忆功能会在会话过程中捕获关键决策和洞�
 
 Claude 和 Gemini 如今都支持"导入记忆"——你可以把 ChatGPT 的记忆导出后粘贴进来，换服务商不用从零开始。
 
+### 2026 年 5 月：Dreaming（记忆整合）
+
+Anthropic 于 2026 年 5 月 6 日正式推出"Dreaming"——一种在会话间隙异步运行的后台记忆整合机制。其灵感源自大脑在睡眠期间重组记忆的方式：一次 dream 任务会读取现有记忆存储以及最多 100 条历史会话记录，然后生成一份全新的、独立的记忆存储——重复项被合并，过时条目被替换，跨会话的共性模式被提炼为精简笔记。原始存储永远不会被修改——开发者先审查输出，再决定是否采纳。
+
+Dreaming 目前以研究预览（research preview）形式面向托管 Agent 开放（需要 `dreaming-2026-04-21` beta header）。支持 Claude Opus 4.7 和 Sonnet 4.6。开发者可通过 `instructions` 参数（最长 4,096 字符）引导整合方向，例如："聚焦编码风格偏好，忽略一次性调试笔记。"
+
+早期效果令人瞩目：法律 AI 公司 Harvey 报告称，启用 Dreaming 后，Agent 任务完成率提升了约 6 倍——因为 Agent 不再在会话之间遗忘文件类型的细微差异和工具特有的变通方法。
+
+这是"睡眠时整合"（sleep-time consolidation）模式首次在生产环境落地——直接回应了该领域最棘手的开放挑战之一（详见第七章）。
+
 ### 设计理念
 
 Anthropic 的方案处处透着开发者优先的气质：
@@ -186,6 +196,18 @@ Google 的杀手锏在于它现成的生态体系。ChatGPT 和 Claude 得通过
 - 上下文更加丰富（你整个数字生活的积累都在）
 - 但硬币的另一面是：更高的隐私敏感度和更复杂的授权模型
 
+### 2026 年 5 月：Memory Bank（I/O 2026）
+
+Google 在 I/O 2026 大会（5 月 19 日）上发布了 Memory Bank，它是 Gemini Enterprise Agent Platform 的核心组件之一，与 ADK 2.0（Agent Development Kit，同日正式 GA）一同亮相。Memory Bank 提供基于身份的持久化记忆——Agent 可以跨多个会话记住用户的偏好、历史和关键细节。
+
+从架构上看，Memory Bank 与 Google 已有的 Personal Intelligence 功能各司其职。Personal Intelligence 拉取 Gmail/Photos/YouTube 中的信息；Memory Bank 则存储从 Agent 对话中提炼的事实，按用户身份隔离。两套系统互为补充：Personal Intelligence 提供广泛的生活上下文，Memory Bank 提供 Agent 专属的学习上下文。
+
+核心功能：
+- `GenerateMemories` — 会话结束时自动从对话历史中提取事实
+- `RetrieveMemories` — 会话开始时检索全部记忆或通过相似度搜索获取相关记忆
+- 内置 ADK 工具：`PreloadMemoryTool`（每轮自动加载）和 `LoadMemoryTool`（按需加载）
+- 多区域支持 — 单个 Memory Bank 可服务于部署在多个区域的 Agent
+
 ---
 
 ## 三种理念正面交锋
@@ -200,6 +222,7 @@ Google 的杀手锏在于它现成的生态体系。ChatGPT 和 Claude 得通过
 | **冷启动** | 得从对话中慢慢学 | 加载 CLAUDE.md 即刻就绪 | 连接已有 Google 应用 |
 | **可移植性** | 通过设置导出 | Git 可追踪的文件 | 导入/导出工具 |
 | **隐私模型** | 可选加入，可删除 | 客户端全权控制 | 精细的应用级权限 |
+| **异步整合** | 否 | 是（Dreaming） | 否 |
 
 ### 背后的信号
 

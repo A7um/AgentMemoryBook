@@ -61,20 +61,22 @@ LoCoMo tests memory systems on long, multi-turn conversations with four question
 
 ---
 
-## Current Leaderboard (April 2026)
+## Current Leaderboard (May 2026)
 
 ### LongMemEval Leaderboard
 
 | System | Score | LLM | Notes |
 |--------|-------|-----|-------|
-| **Agentmemory V4** | **96.2%** | Claude Opus | Solo developer, 16 days, $1K API cost |
+| **Exabase M-1** | **96.4%** | Gemini 3 Flash | Cheaper model than competitors |
+| **Agentmemory V4** | **96.2%** | Claude Opus 4.6 | Solo developer, 16 days, $1K API cost |
 | **PwC Chronos** | 95.6% | — | Research team |
-| **OMEGA** | 95.4% | — | Research |
+| **Mem0** | 94.8% | — | Up from 66.9% (v1); v3 architecture |
 | **Mastra** | 94.87% | GPT-5-mini | 10-point jump from model upgrade alone |
+| **OMEGA** | 93.2% | — | Raw accuracy (reported 95.4% is task-weighted) |
+| **Honcho** | 92.6% | — | Major improvement |
 | **Hindsight** | 91.4% | OSS-20B | Best open-source model result |
-| **Hindsight** | 89.0% | OSS-120B | — |
-| **Supermemory** | 85.2% | GPT-4o | — |
 | **Emergence AI** | 86.0% | — | — |
+| **Supermemory** | 85.9% | GPT-4o | Single-pass (advertised ~99% uses ensemble) |
 | **Zep** | 71.2% | — | — |
 | **Full-context GPT-4o** | 60.2% | GPT-4o | Baseline |
 
@@ -93,6 +95,18 @@ LoCoMo tests memory systems on long, multi-turn conversations with four question
 | **LangMem** | 62.2% | 47.9% | 71.1% | 23.4% | 58.1% |
 | **OpenAI** | 63.8% | 42.9% | 62.3% | 21.7% | 52.9% |
 
+### LongMemEval-V2 (May 2026)
+
+LongMemEval-V2 (LME-V2) launched in May 2026 to address a major gap: evaluating whether memory systems can help agents become experienced colleagues in specialized web and enterprise environments.
+
+Key differences from V1:
+- **451 manually curated questions** across 5 memory abilities (static state recall, dynamic state tracking, workflow knowledge, environment gotchas, premise awareness)
+- **Multimodal web-agent trajectories** — up to 500 trajectories per haystack, up to 115M tokens in the largest haystacks
+- **New scoring: LAFS** (Latency-Accuracy Frontier Score) — measures accuracy-latency tradeoff, not just raw accuracy
+- **Two domains**: web and enterprise, with small and medium tiers
+
+The best-performing baseline, AgentRunbook-C (which stores trajectories as files and invokes a coding agent to gather evidence), achieved 72.5% — significantly better than RAG baselines (48.5%) but highlighting that agentic memory in specialized environments remains a hard, unsolved problem.
+
 ---
 
 ## How to Read These Numbers
@@ -108,6 +122,8 @@ LoCoMo tests memory systems on long, multi-turn conversations with four question
 4. **Temporal reasoning is the hardest category.** Most systems score lowest on temporal queries, which require understanding *when* things happened.
 
 5. **Model choice matters a lot.** Mastra jumped 10 points just by switching from GPT-4o to GPT-5-mini with zero architecture changes.
+
+6. **The leaderboard is compressing at the top.** Multiple systems now score above 94% on LongMemEval V1, and the gap between the #1 and #5 system is less than 3 points. This suggests LongMemEval V1 is approaching its useful ceiling — which is exactly why V2 was created with harder, more realistic tasks.
 
 ### What the Numbers Don't Tell You
 

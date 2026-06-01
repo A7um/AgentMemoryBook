@@ -49,7 +49,7 @@ A comprehensive guide to understanding how state-of-the-art (SOTA) agent memory 
 
 | System | Architecture | Open Source | Best For | LongMemEval | LoCoMo |
 |--------|-------------|-------------|----------|-------------|--------|
-| **Mem0** | Extract → Update pipeline + vector/graph | Yes (Apache 2.0) | Production chat agents | — | 66.9% |
+| **Mem0** | Extract → Update pipeline + vector/entity linking (v3) | Yes (Apache 2.0) | Production chat agents | 94.8% | 66.9% |
 | **OpenViking** | Filesystem paradigm + tiered context | Yes (Apache 2.0) | Unified context management | — | — |
 | **Hindsight** | 4-network structured memory bank | Yes (MIT) | Long-horizon reasoning agents | 91.4% | 89.6% |
 | **ByteRover** | Hierarchical Context Tree + file-based | Partial (CLI) | Coding agents | — | 92.2% |
